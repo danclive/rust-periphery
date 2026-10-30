@@ -3,20 +3,15 @@ name          = "periphery"
 version       = "0.1.0"
 license       = "MIT"
 authors       = ["danc <dangcheng@hotmail.com>"]
-description   = "A Rust library for peripheral I/O (GPIO, PWM, SPI, I2C, MMIO) in Linux."
+description   = "A Rust library for peripheral I/O (GPIO, PWM, SPI, I2C) in Linux."
 documentation = "https://docs.rs/periphery"
-homepage      = "https://github.com/danclive/nson"
-repository    = "https://github.com/danclive/nson"
+homepage      = "https://github.com/danclive/rust-periphery"
+repository    = "https://github.com/danclive/rust-periphery"
 readme        = "README.md"
-keywords      = ["periphery", "pi", "hal", "raspberry"]
-categories    = ["embedded", "hardware-support"]
-edition       = "2018"
-exclude       = [
-  ".gitignore",
-  ".travis.yml",
-  "deploy.sh",
-  "test/**/*",
-]
+keywords      = ["gpio", "i2c", "spi", "pwm", "raspberry-pi"]
+categories    = ["embedded", "hardware-support", "os::linux-apis"]
+rust-version  = "1.85"
+edition       = "2024"
 
 [dependencies]
 libc = "0.2"
