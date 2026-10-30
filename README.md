@@ -135,9 +135,9 @@ fn main() -> std::io::Result<()> {
 
 ## Thread safety
 
-`I2C` and `SPI` are `Send`: they can be moved into a thread. They are not
-`Sync`, so a single handle cannot be shared between threads — give each thread
-its own handle, or wrap one in `Mutex`.
+`I2C`, `SPI` and `Pwm` are `Send`: they can be moved into a thread. They are
+not `Sync`, so a single handle cannot be shared between threads — give each
+thread its own handle, or wrap one in `Mutex`.
 
 ## Notes
 

@@ -6,18 +6,29 @@
 //! Note that sysfs PWM is only available when the kernel is built with
 //! `CONFIG_PWM_SYSFS`.
 
+use std::cell::Cell;
+use std::fmt;
 use std::fs;
 use std::fs::File;
 use std::fs::OpenOptions;
 use std::io::ErrorKind::{InvalidData, Other};
 use std::io::{self, Read, Write};
+use std::marker::PhantomData;
 use std::str::FromStr;
 
 /// A single PWM channel.
-#[derive(Debug)]
+///
+/// The underlying sysfs files are opened per call, so the handle owns no
+/// resources and dropping it does not unexport the channel; call
+/// [`Pwm::unexport`] explicitly.
+///
+/// The handle is `Send`, so it can be moved to another thread, but not `Sync`:
+/// configuring a channel takes several consecutive sysfs writes (period, duty
+/// cycle, enable) that must not be interleaved with another thread's writes.
 pub struct Pwm {
     chip: PwmChip,
     number: u32,
+    _not_sync: PhantomData<Cell<()>>,
 }
 
 /// A PWM controller, i.e. `/sys/class/pwm/pwmchip<number>`.
@@ -43,7 +54,11 @@ impl Pwm {
     pub fn new(chip: u32, number: u32) -> io::Result<Pwm> {
         let chip: PwmChip = PwmChip::new(chip)?;
 
-        Ok(Pwm { chip, number })
+        Ok(Pwm {
+            chip,
+            number,
+            _not_sync: PhantomData,
+        })
     }
 
     /// Exports the channel, making it usable.
@@ -131,6 +146,15 @@ impl Pwm {
         polarity_file.write_all(contents.as_bytes())?;
 
         Ok(())
+    }
+}
+
+impl fmt::Debug for Pwm {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.debug_struct("Pwm")
+            .field("chip", &self.chip)
+            .field("number", &self.number)
+            .finish()
     }
 }
 
