@@ -3,19 +3,44 @@
 //! The crate talks to the kernel interfaces directly, so no C library or
 //! cross-compilation setup is needed:
 //!
-//! | Bus  | Kernel interface                     | Requires                  |
-//! |------|--------------------------------------|---------------------------|
-//! | GPIO | `/sys/class/gpio` (sysfs, deprecated) | `CONFIG_GPIO_SYSFS`      |
-//! | PWM  | `/sys/class/pwm` (sysfs)              | `CONFIG_PWM_SYSFS`       |
-//! | SPI  | `/dev/spidev<bus>.<cs>` (`spidev`)    | `CONFIG_SPI_SPIDEV`      |
-//! | I2C  | `/dev/i2c-<bus>` (`i2c-dev`)          | `CONFIG_I2C_CHARDEV`     |
+//! | Bus  | Kernel interface                        | Requires              |
+//! |------|-----------------------------------------|-----------------------|
+//! | GPIO | `/dev/gpiochip<N>` (recommended)        | `CONFIG_GPIO_CDEV`    |
+//! | GPIO | `/sys/class/gpio` (deprecated)          | `CONFIG_GPIO_SYSFS`   |
+//! | PWM  | `/sys/class/pwm` (sysfs)                | `CONFIG_PWM_SYSFS`    |
+//! | SPI  | `/dev/spidev<bus>.<cs>` (`spidev`)      | `CONFIG_SPI_SPIDEV`   |
+//! | I2C  | `/dev/i2c-<bus>` (`i2c-dev`)            | `CONFIG_I2C_CHARDEV`  |
 //!
 //! Access normally requires `root` or membership in the corresponding `gpio`,
 //! `pwm`, `spi` or `i2c` group.
 //!
+//! # GPIO interface
+//!
+//! Use [`sys::gpiochip`] on any current kernel. The sysfs backend in
+//! [`sys::gpio`] needs `CONFIG_GPIO_SYSFS`, which recent kernels disable by
+//! default, so it is only useful for older systems.
+//!
 //! # Examples
 //!
-//! Driving a GPIO line:
+//! Driving a GPIO line (character device):
+//!
+//! ```no_run
+//! use periphery::sys::gpiochip::{Chip, LineSettings, Value};
+//!
+//! # fn main() -> std::io::Result<()> {
+//! let chip = Chip::new(0)?;
+//! let line = chip.request_lines(
+//!     &[17],
+//!     "my-app",
+//!     &LineSettings::new().output().initial_value(Value::Low),
+//! )?;
+//!
+//! line.set_value(0, Value::High)?;
+//! # Ok(())
+//! # }
+//! ```
+//!
+//! Driving a GPIO line (legacy sysfs):
 //!
 //! ```no_run
 //! use periphery::sys::gpio::{Direction, Pin, Value};

@@ -4,9 +4,10 @@
 //! membership in the `gpio` group, and the pin has to be [`Pin::export`]ed
 //! before it can be configured.
 //!
-//! Note that this interface is deprecated by the kernel in favour of the
-//! `gpiochip` character device, and is only available when the kernel is
-//! built with `CONFIG_GPIO_SYSFS`.
+//! This interface is deprecated by the kernel and only available when it is
+//! built with `CONFIG_GPIO_SYSFS`, which recent kernels disable by default.
+//! Prefer [`crate::sys::gpiochip`], which drives the `gpiochip` character
+//! device instead and works everywhere.
 
 use std::fs;
 use std::fs::{File, OpenOptions};

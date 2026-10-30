@@ -19,6 +19,7 @@ macro_rules! syscall {
 }
 
 pub mod gpio;
+pub mod gpiochip;
 pub mod i2c;
 pub mod pwm;
 pub mod spi;
