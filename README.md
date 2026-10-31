@@ -40,7 +40,7 @@ where someone enabled GPIO sysfs.
 
 ```toml
 [dependencies]
-periphery = "0.1"
+periphery = "0.2"
 ```
 
 ## Permissions
